@@ -1,22 +1,6 @@
-import { xor, pick, flatten } from "lodash";
 import StorageBase from "ghost-storage-base";
 import { GhostStoragePreprocessorSqipTransform } from "./squip";
-/**
- * At runtime, this file will be installed to content/adapters/storage/preprocessor/dist/index.js
- *
- * ../preprocessor
- * ../../storage
- * ../../../adapters
- * ../../../../content
- * ../../../../../core
- */
-
-import LocalFilesStorage from "ghost/core/server/adapters/storage/LocalFilesStorage";
-
-type GhostStoragePreprocessorConfig = {
-  transforms: [string, { [k: string]: any }][];
-  use: string;
-};
+import { getLocalFilesStorage } from "./localFilesStorage";
 
 type Preprocessor = {
   save(
@@ -35,8 +19,8 @@ module.exports = class GhostStoragePreprocessor extends StorageBase {
 
   constructor() {
     super();
-    (this.storage = new LocalFilesStorage()),
-      (this.preprocessors = [new GhostStoragePreprocessorSqipTransform()]);
+    this.storage = getLocalFilesStorage();
+    this.preprocessors = [new GhostStoragePreprocessorSqipTransform()];
   }
 
   public exists(...args: any[]) {
@@ -75,7 +59,7 @@ module.exports = class GhostStoragePreprocessor extends StorageBase {
           preprocessor[method](...args)
         )
       );
-      images = flatten(processed);
+      images = processed.flat();
     }
     const [res] = await Promise.all(
       images.map((args) => this.storage[method](...args))
