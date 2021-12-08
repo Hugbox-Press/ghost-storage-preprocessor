@@ -14,6 +14,8 @@
     "lint": "tslint -p tsconfig.json"
   },
   "dependencies": {
+    "@tryghost/errors": "^1.1.1",
+    "ghost": "tryghost/ghost",
     "ghost-storage-base": "^0.0.1",
     "lodash": "^4.17.5",
     "sqip": "^0.3.3",

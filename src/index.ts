@@ -1,5 +1,5 @@
 import { xor, pick, flatten } from "lodash";
-import * as StorageBase from "ghost-storage-base";
+import StorageBase from "ghost-storage-base";
 import { GhostStoragePreprocessorSqipTransform } from "./squip";
 /**
  * At runtime, this file will be installed to content/adapters/storage/preprocessor/dist/index.js
@@ -10,12 +10,8 @@ import { GhostStoragePreprocessorSqipTransform } from "./squip";
  * ../../../../content
  * ../../../../../core
  */
-// @ts-ignore
-import * as config from "../../../../../current/core/server/config";
-// @ts-ignore
-import * as common from "../../../../../current/core/server/lib/common";
-// @ts-ignore
-import * as LocalFileStorage from "../../../../../current/core/server/adapters/storage/LocalFileStorage";
+
+import LocalFilesStorage from "ghost/core/server/adapters/storage/LocalFilesStorage";
 
 type GhostStoragePreprocessorConfig = {
   transforms: [string, { [k: string]: any }][];
@@ -37,10 +33,10 @@ module.exports = class GhostStoragePreprocessor extends StorageBase {
   public storage: any;
   public preprocessors: Preprocessor[];
 
-  constructor(preprocessorConfig: GhostStoragePreprocessorConfig) {
+  constructor() {
     super();
-    this.storage = getStorage(preprocessorConfig.use);
-    this.preprocessors = [new GhostStoragePreprocessorSqipTransform()];
+    (this.storage = new LocalFilesStorage()),
+      (this.preprocessors = [new GhostStoragePreprocessorSqipTransform()]);
   }
 
   public exists(...args: any[]) {
@@ -87,88 +83,3 @@ module.exports = class GhostStoragePreprocessor extends StorageBase {
     return res;
   }
 };
-
-/**
- * Based on https://github.com/TryGhost/Ghost/blob/master/core/server/adapters/storage/index.js
- */
-const storage = {
-  local: new LocalFileStorage(),
-};
-
-function getStorage(storageModuleName = "local") {
-  const storageConfig = config.get(`storage:${storageModuleName}`);
-  let CustomStorage; // tslint:disable-line variable-name
-
-  // CASE: cached
-  if (storage[storageModuleName]) return storage[storageModuleName];
-
-  // CASE: load adapter from custom path  (.../content/storage)
-  try {
-    CustomStorage = require(config.getContentPath("storage") +
-      storageModuleName);
-  } catch (err) {
-    if (err.code !== "MODULE_NOT_FOUND") {
-      throw new common.errors.IncorrectUsageError({
-        message:
-          "We have detected an unknown error in your custom storage adapter.",
-        err,
-      });
-    }
-  }
-
-  // CASE: check in the default storage path
-  try {
-    CustomStorage =
-      CustomStorage ||
-      require(config.get("paths").internalStoragePath + storageModuleName);
-  } catch (err) {
-    if (err.code === "MODULE_NOT_FOUND") {
-      throw new common.errors.IncorrectUsageError({
-        err,
-        context:
-          "We cannot find your adapter in: " +
-          config.getContentPath("storage") +
-          " or: " +
-          config.get("paths").internalStoragePath,
-      });
-    } else {
-      throw new common.errors.IncorrectUsageError({
-        message: "We have detected an error in your custom storage adapter.",
-        err,
-      });
-    }
-  }
-
-  const customStorage = new CustomStorage(storageConfig);
-
-  // CASE: if multiple StorageBase modules are installed, instanceof could return false
-  if (Object.getPrototypeOf(CustomStorage).name !== StorageBase.name) {
-    throw new common.errors.IncorrectUsageError({
-      message: "Your storage adapter does not inherit from the Storage Base.",
-    });
-  }
-
-  if (!customStorage.requiredFns) {
-    throw new common.errors.IncorrectUsageError({
-      message:
-        "Your storage adapter does not provide the minimum required functions.",
-    });
-  }
-
-  if (
-    xor(
-      customStorage.requiredFns,
-      Object.keys(
-        pick(Object.getPrototypeOf(customStorage), customStorage.requiredFns)
-      )
-    ).length
-  ) {
-    throw new common.errors.IncorrectUsageError({
-      message:
-        "Your storage adapter does not provide the minimum required functions.",
-    });
-  }
-
-  storage[storageModuleName] = customStorage;
-  return storage[storageModuleName];
-}
