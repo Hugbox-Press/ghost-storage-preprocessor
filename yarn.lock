@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@tryghost/constants@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@tryghost/constants/-/constants-1.0.0.tgz#63ceeb4614e4e79bf208b79664c5898334b00a5f"
+  integrity sha512-vbJFj/jhPockvcjf3prBTj9YD9aeIWu2rK9Y0rXNQDA2RslTh9m8Y7NO2JzQ+kG2n1yOJRqdcgNJCXwwS/CjoA==
+
 "@tryghost/errors@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@tryghost/errors/-/errors-1.1.1.tgz#dc38e40591b018b0ac6b5742f7bab5d379c67e60"
