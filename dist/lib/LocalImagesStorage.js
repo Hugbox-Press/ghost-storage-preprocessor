@@ -8,7 +8,7 @@ const fs_1 = require("fs");
 const path = require("path");
 const StorageBase = require("ghost-storage-base");
 const url_utils_1 = require("./url-utils");
-const sqip_base_1 = require("sqip-base");
+const sqip_1 = require("sqip");
 const config_1 = require("./config");
 const moment = require("moment");
 const errors = require("@tryghost/errors");
@@ -49,7 +49,7 @@ class LocalImagesStorage extends StorageBase {
             name: image.name + ".sqip.svg",
         };
         const imageFile = await fs_1.promises.readFile(image.path);
-        const sqipResults = await (0, sqip_base_1.sqip)({
+        const sqipResults = await (0, sqip_1.sqip)({
             input: imageFile,
             outputFileName: sqipImage.name,
         });

@@ -6,7 +6,7 @@ import { promises as fs } from "fs";
 import * as path from "path";
 import * as StorageBase from "ghost-storage-base";
 import urlUtils from "./url-utils";
-import { sqip } from "sqip-base";
+import { sqip } from "sqip";
 import getConfig from "./config";
 
 const moment = require("moment");
