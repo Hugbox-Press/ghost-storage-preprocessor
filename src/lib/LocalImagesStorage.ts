@@ -4,9 +4,9 @@ const serveStatic = require("express").static;
 
 import { promises as fs } from "fs";
 import * as path from "path";
-import * as StorageBase from "ghost-storage-base";
+import StorageBase from "ghost-storage-base";
 import urlUtils from "./url-utils";
-import { sqip } from "sqip";
+import { sqip } from "./sqip";
 import getConfig from "./config";
 
 const moment = require("moment");
@@ -24,6 +24,51 @@ const messages = {
 
 interface ImageLike extends StorageBase.Image {
   buffer?: Buffer;
+}
+
+interface PrimitiveOptions {
+  /**
+   * Input image to process (can be a local path, http url, or data url)
+   */
+  input: string;
+  /**
+   *  Path to generate output image
+   */
+  output: string;
+  /**
+   * Number of steps to process [1, 1000] (optional, default 200)
+   */
+  numSteps: number;
+  /**
+   *  Minimum energy to stop processing early [0, 1]
+   */
+  minEnergy: number;
+  /**
+   * Alpha opacity of shapes [0, 255] (optional, default 128)
+   */
+  shapeAlpha: number;
+  /**
+   * Type of shapes to use (optional, default traingle)
+   */
+  shapeType: string;
+  /**
+   * Number of top-level candidates per step [1, 32] (optional, default 1)
+   */
+  numCandidates: number;
+  /**
+   * Number of random candidate shapes per step [10, 1000] (optional, default 50)
+   */
+  numCandidateShapes: number;
+  /**
+   * Number of candidate mutations per step [10, 500] (optional, default 100)
+   */
+  numCandidateMutations: number;
+  /**
+   * Number of extra candidate shapes per step [0, 16] (optional, default 0)
+   */
+  numCandidateExtras: number;
+  // onStep?: function //? Optional async function taking in the model and step index
+  // log?: function // Optional logging function (console.log to enable logging) (optional, default noop)
 }
 
 export class LocalImagesStorage extends StorageBase {

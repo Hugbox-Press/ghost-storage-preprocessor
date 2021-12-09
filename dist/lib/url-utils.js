@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 const UrlUtils = require("@tryghost/url-utils");
-const config_1 = require("./config");
+const config_1 = (0, tslib_1.__importDefault)(require("./config"));
 /**
  * Returns a subdirectory URL, if defined so in the config.
  * @callback getSubdirFn

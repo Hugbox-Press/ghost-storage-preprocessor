@@ -1,15 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LocalImagesStorage = void 0;
+const tslib_1 = require("tslib");
 // # Local File Base Storage module
 // The (default) module for storing files using the local file system
 const serveStatic = require("express").static;
 const fs_1 = require("fs");
-const path = require("path");
-const StorageBase = require("ghost-storage-base");
-const url_utils_1 = require("./url-utils");
-const sqip_1 = require("sqip");
-const config_1 = require("./config");
+const path = (0, tslib_1.__importStar)(require("path"));
+const ghost_storage_base_1 = (0, tslib_1.__importDefault)(require("ghost-storage-base"));
+const url_utils_1 = (0, tslib_1.__importDefault)(require("./url-utils"));
+const sqip_1 = require("./sqip");
+const config_1 = (0, tslib_1.__importDefault)(require("./config"));
 const moment = require("moment");
 const errors = require("@tryghost/errors");
 const tpl = require("@tryghost/tpl");
@@ -21,7 +22,7 @@ const messages = {
     cannotRead: "Could not read image: {file}",
     invalidUrlParameter: `The URL "{url}" is not a valid URL for this site.`,
 };
-class LocalImagesStorage extends StorageBase {
+class LocalImagesStorage extends ghost_storage_base_1.default {
     storagePath;
     staticFileURLPrefix;
     siteUrl;

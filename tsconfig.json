@@ -2,10 +2,13 @@
   "compilerOptions": {
     "lib": ["ESNext", "DOM"],
     "target": "esnext",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "allowJs": true,
     "module": "commonjs",
     "outDir": "./dist",
     "rootDir": "./src",
     "importHelpers": true
-  }
+  },
+  "include": ["src/**/*.ts"]
 }
