@@ -1,4 +1,4 @@
-import constants from "@tryghost/constants";
+const constants = require("@tryghost/constants");
 import * as path from "path";
 import config from "./config";
 import { LocalStorageBase } from "./LocalStorageBase";

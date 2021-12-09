@@ -1,9 +1,17 @@
+// # Local File Base Storage module
+// The (default) module for storing files using the local file system
+const serveStatic = require("express").static;
+
 import fs from "fs-extra";
-import urlUtils from "./url-utils";
 import * as path from "path";
 import * as StorageBase from "ghost-storage-base";
+import urlUtils from "./url-utils";
+
+const moment = require("moment");
 const errors = require("@tryghost/errors");
 const tpl = require("@tryghost/tpl");
+const logging = require("@tryghost/logging");
+const constants = require("@tryghost/constants");
 
 const messages = {
   notFound: "File not found",
@@ -111,7 +119,47 @@ export class LocalStorageBase extends StorageBase {
    * @returns {serveStaticContent}
    */
   serve() {
-    return null;
+    const { storagePath, errorMessages } = this;
+
+    return function serveStaticContent(req, res, next) {
+      const startedAtMoment = moment();
+
+      return serveStatic(storagePath, {
+        maxAge: constants.ONE_YEAR_MS,
+        fallthrough: false,
+        onEnd: () => {
+          logging.info(
+            "LocalStorageBase.serve",
+            req.path,
+            moment().diff(startedAtMoment, "ms") + "ms"
+          );
+        },
+      })(req, res, (err) => {
+        if (err) {
+          if (err.statusCode === 404) {
+            return next(
+              new errors.NotFoundError({
+                message: tpl(errorMessages.notFound),
+                code: "STATIC_FILE_NOT_FOUND",
+                property: err.path,
+              })
+            );
+          }
+
+          if (err.statusCode === 400) {
+            return next(new errors.BadRequestError({ err: err }));
+          }
+
+          if (err.statusCode === 403) {
+            return next(new errors.NoPermissionError({ err: err }));
+          }
+
+          return next(new errors.InternalServerError({ err: err }));
+        }
+
+        next();
+      });
+    };
   }
 
   /**
