@@ -47,13 +47,13 @@ export class LocalImagesStorage extends StorageBase {
     targetDir: string = this.getTargetDir(this.storagePath)
   ): Promise<string> {
     const imageFile = await fs.readFile(image.path);
-    const res = await sqip({ input: imageFile });
-    const sqipResult = Array.isArray(res) ? res[0] : res;
-
-    const targetFilename =
+    const outputFileName =
       (await this.getUniqueFileName(image, targetDir)) + ".sqip.svg";
 
-    await this.saveRaw(sqipResult.content, targetFilename);
+    const res = await sqip({ input: imageFile, outputFileName });
+    const sqipResult = Array.isArray(res) ? res[0] : res;
+
+    await this.saveRaw(sqipResult.content, outputFileName);
 
     return this._save(image, targetDir);
   }

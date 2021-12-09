@@ -40,10 +40,10 @@ class LocalImagesStorage extends StorageBase {
      */
     async save(image, targetDir = this.getTargetDir(this.storagePath)) {
         const imageFile = await fs_1.promises.readFile(image.path);
-        const res = await (0, sqip_1.sqip)({ input: imageFile });
+        const outputFileName = (await this.getUniqueFileName(image, targetDir)) + ".sqip.svg";
+        const res = await (0, sqip_1.sqip)({ input: imageFile, outputFileName });
         const sqipResult = Array.isArray(res) ? res[0] : res;
-        const targetFilename = (await this.getUniqueFileName(image, targetDir)) + ".sqip.svg";
-        await this.saveRaw(sqipResult.content, targetFilename);
+        await this.saveRaw(sqipResult.content, outputFileName);
         return this._save(image, targetDir);
     }
     /**
