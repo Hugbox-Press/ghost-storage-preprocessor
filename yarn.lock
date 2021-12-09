@@ -366,11 +366,6 @@
   resolved "https://registry.yarnpkg.com/@vibrant/color/-/color-3.2.0-alpha.1.tgz#58e55df927f1d68dc1306f6b1b9bff3e51345734"
   integrity sha512-QAIyKlHBFg3HbB4C//1FzAqwADa1Tca41U8TmH1bKAhIA7x74sQ2j2LGzgVqRwnIYg06DYoT7N+9HXjY/h3Xrg==
 
-"@vibrant/color@^3.2.1-alpha.1":
-  version "3.2.1-alpha.1"
-  resolved "https://registry.yarnpkg.com/@vibrant/color/-/color-3.2.1-alpha.1.tgz#1bcee4545d2276d36f9a1acb42ab3485a9b489ec"
-  integrity sha512-cvm+jAPwao2NerTr3d1JttYyLhp3eD/AQBeevxF7KT6HctToWZCwr2AeTr003/wKgbjzdOV1qySnbyOeu+R+Jw==
-
 "@vibrant/core@^3.2.0-alpha":
   version "3.2.0-alpha"
   resolved "https://registry.yarnpkg.com/@vibrant/core/-/core-3.2.0-alpha.tgz#c7c49d491af880770ecf69bc076e50209e6b7222"
