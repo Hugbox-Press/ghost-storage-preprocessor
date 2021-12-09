@@ -469,6 +469,11 @@
   resolved "https://registry.yarnpkg.com/@vibrant/color/-/color-3.2.0-alpha.1.tgz#58e55df927f1d68dc1306f6b1b9bff3e51345734"
   integrity sha512-QAIyKlHBFg3HbB4C//1FzAqwADa1Tca41U8TmH1bKAhIA7x74sQ2j2LGzgVqRwnIYg06DYoT7N+9HXjY/h3Xrg==
 
+"@vibrant/color@^3.2.1-alpha.1":
+  version "3.2.1-alpha.1"
+  resolved "https://registry.yarnpkg.com/@vibrant/color/-/color-3.2.1-alpha.1.tgz#1bcee4545d2276d36f9a1acb42ab3485a9b489ec"
+  integrity sha512-cvm+jAPwao2NerTr3d1JttYyLhp3eD/AQBeevxF7KT6HctToWZCwr2AeTr003/wKgbjzdOV1qySnbyOeu+R+Jw==
+
 "@vibrant/core@^3.2.0-alpha":
   version "3.2.0-alpha"
   resolved "https://registry.yarnpkg.com/@vibrant/core/-/core-3.2.0-alpha.tgz#c7c49d491af880770ecf69bc076e50209e6b7222"
@@ -2920,6 +2925,23 @@ sprintf-js@~1.0.2:
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
 
+"sqip-base@npm:sqip@canary", sqip@^1.0.0-alpha.34, sqip@canary:
+  version "1.0.0-alpha.34"
+  resolved "https://registry.yarnpkg.com/sqip/-/sqip-1.0.0-alpha.34.tgz#a7b4b3bf7f53e8ee5fba3e38d8ac4399e931cc5a"
+  integrity sha512-Dy1sPVf+GWRNPR8Fssz1nCq+aTyWCXhnWP0vbudAGr1ZdEeCb4/IS5AiAFiFfx+qDDzThiiN/d3k1VnpyCKxIg==
+  dependencies:
+    chalk "^4.1.0"
+    cheerio "^1.0.0-rc.10"
+    cli-table3 "^0.6.0"
+    command-line-args "^5.2.0"
+    expand-tilde "^2.0.2"
+    fast-glob "^3.2.4"
+    fs-extra "^10.0.0"
+    node-vibrant "^3.2.0-alpha"
+    probe-image-size "^7.1.0"
+    sharp "^0.29.0"
+    term-img "^5.0.0"
+
 sqip-plugin-blur@canary:
   version "1.0.0-alpha.35"
   resolved "https://registry.yarnpkg.com/sqip-plugin-blur/-/sqip-plugin-blur-1.0.0-alpha.35.tgz#246bda3dac0ba6240f190532805214532a35b815"
@@ -2961,23 +2983,6 @@ sqip@^0.3.3:
     image-size "^0.6.1"
     svgo "^0.7.2"
     xmldom "^0.1.27"
-
-sqip@^1.0.0-alpha.34, sqip@canary:
-  version "1.0.0-alpha.34"
-  resolved "https://registry.yarnpkg.com/sqip/-/sqip-1.0.0-alpha.34.tgz#a7b4b3bf7f53e8ee5fba3e38d8ac4399e931cc5a"
-  integrity sha512-Dy1sPVf+GWRNPR8Fssz1nCq+aTyWCXhnWP0vbudAGr1ZdEeCb4/IS5AiAFiFfx+qDDzThiiN/d3k1VnpyCKxIg==
-  dependencies:
-    chalk "^4.1.0"
-    cheerio "^1.0.0-rc.10"
-    cli-table3 "^0.6.0"
-    command-line-args "^5.2.0"
-    expand-tilde "^2.0.2"
-    fast-glob "^3.2.4"
-    fs-extra "^10.0.0"
-    node-vibrant "^3.2.0-alpha"
-    probe-image-size "^7.1.0"
-    sharp "^0.29.0"
-    term-img "^5.0.0"
 
 sshpk@^1.7.0:
   version "1.16.1"

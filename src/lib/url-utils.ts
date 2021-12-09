@@ -1,5 +1,5 @@
 const UrlUtils = require("@tryghost/url-utils");
-import config from "./config";
+import getConfig from "./config";
 
 /**
  * Returns a subdirectory URL, if defined so in the config.
@@ -7,6 +7,8 @@ import config from "./config";
  * @return {string} a subdirectory if configured.
  */
 function getSubdir() {
+  const config = getConfig();
+
   // Parse local path location
   let { pathname } = new URL(config.url);
   let subdir;
@@ -32,6 +34,7 @@ function getSubdir() {
  * @return {string} returns the url as defined in config, but always with a trailing `/`
  */
 function getSiteUrl(secure = false) {
+  const config = getConfig();
   let siteUrl = config.url;
 
   if (secure) {

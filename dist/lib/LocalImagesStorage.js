@@ -8,8 +8,8 @@ const fs_1 = require("fs");
 const path = require("path");
 const StorageBase = require("ghost-storage-base");
 const url_utils_1 = require("./url-utils");
+const sqip_base_1 = require("sqip-base");
 const config_1 = require("./config");
-const sqip_1 = require("sqip");
 const moment = require("moment");
 const errors = require("@tryghost/errors");
 const tpl = require("@tryghost/tpl");
@@ -29,9 +29,11 @@ class LocalImagesStorage extends StorageBase {
     errorMessages;
     constructor() {
         super();
-        this.storagePath = path.join(config_1.default.paths.contentPath, "images/");
+        const config = (0, config_1.default)();
+        this.storagePath = path.join(config.paths.contentPath, "images/");
         this.staticFileURLPrefix = url_utils_1.default.STATIC_IMAGE_URL_PREFIX;
-        this.siteUrl = config_1.default.url;
+        this.siteUrl = config.url;
+        this.staticFileUrl = `${this.siteUrl}${this.staticFileURLPrefix}`;
         this.errorMessages = messages;
     }
     /**
@@ -47,7 +49,7 @@ class LocalImagesStorage extends StorageBase {
             name: image.name + ".sqip.svg",
         };
         const imageFile = await fs_1.promises.readFile(image.path);
-        const sqipResults = await (0, sqip_1.sqip)({
+        const sqipResults = await (0, sqip_base_1.sqip)({
             input: imageFile,
             outputFileName: sqipImage.name,
         });

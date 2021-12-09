@@ -5,9 +5,13 @@ interface GhostConfig {
   };
 }
 
-const config: GhostConfig = require("../../../../../config.production.json");
-// const config: GhostConfig = require("../config.production.json");
+const getConfig = () => {
+  const config: GhostConfig = require("../../../../../config.production.json");
+  // const config: GhostConfig = require("../config.production.json");
 
-config.url = new URL(config.url).toString();
+  config.url = new URL(config.url).toString();
 
-export default config;
+  return config;
+};
+
+export default getConfig;

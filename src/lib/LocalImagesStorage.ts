@@ -6,8 +6,8 @@ import { promises as fs } from "fs";
 import * as path from "path";
 import * as StorageBase from "ghost-storage-base";
 import urlUtils from "./url-utils";
-import config from "./config";
-import { sqip } from "sqip";
+import { sqip } from "sqip-base";
+import getConfig from "./config";
 
 const moment = require("moment");
 const errors = require("@tryghost/errors");
@@ -36,9 +36,13 @@ export class LocalImagesStorage extends StorageBase {
   constructor() {
     super();
 
+    const config = getConfig();
+
     this.storagePath = path.join(config.paths.contentPath, "images/");
     this.staticFileURLPrefix = urlUtils.STATIC_IMAGE_URL_PREFIX;
     this.siteUrl = config.url;
+    this.staticFileUrl = `${this.siteUrl}${this.staticFileURLPrefix}`;
+
     this.errorMessages = messages;
   }
 

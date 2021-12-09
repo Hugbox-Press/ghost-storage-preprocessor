@@ -8,8 +8,9 @@ const config_1 = require("./config");
  * @return {string} a subdirectory if configured.
  */
 function getSubdir() {
+    const config = (0, config_1.default)();
     // Parse local path location
-    let { pathname } = new URL(config_1.default.url);
+    let { pathname } = new URL(config.url);
     let subdir;
     // Remove trailing slash
     if (pathname !== "/") {
@@ -30,7 +31,8 @@ function getSubdir() {
  * @return {string} returns the url as defined in config, but always with a trailing `/`
  */
 function getSiteUrl(secure = false) {
-    let siteUrl = config_1.default.url;
+    const config = (0, config_1.default)();
+    let siteUrl = config.url;
     if (secure) {
         siteUrl = siteUrl.replace("http://", "https://");
     }
