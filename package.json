@@ -16,6 +16,9 @@
   "dependencies": {
     "@tryghost/constants": "^1.0.0",
     "@tryghost/errors": "^1.1.1",
+    "@tryghost/logging": "^2.0.0",
+    "@tryghost/tpl": "^0.1.8",
+    "@tryghost/url-utils": "^2.0.4",
     "ghost-storage-base": "^0.0.1",
     "sqip": "^0.3.3",
     "tslib": "^2.3.1"
