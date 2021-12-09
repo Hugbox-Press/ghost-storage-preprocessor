@@ -41,7 +41,10 @@ class LocalImagesStorage extends ghost_storage_base_1.default {
      * Saves the file to storage (the file system)
      * - returns a promise which ultimately returns the full url to the uploaded file
      */
-    async save(image, targetDir = this.getTargetDir(this.storagePath)) {
+    async save(image, 
+    // NOTE: the base implementation of `getTargetDir` returns the format this.storagePath/YYYY/MM
+    targetDir = this.getTargetDir(this.storagePath)) {
+        image.name = await this.getUniqueFileName(image, targetDir);
         // First, save original.
         const savedImagePath = await this._save(image, targetDir);
         // Create sqip image...
@@ -68,22 +71,17 @@ class LocalImagesStorage extends ghost_storage_base_1.default {
      * - returns a promise which ultimately returns the full url to the uploaded file
      */
     async _save(file, targetDir) {
-        let targetFilename;
-        // NOTE: the base implementation of `getTargetDir` returns the format this.storagePath/YYYY/MM
-        targetDir = targetDir || this.getTargetDir(this.storagePath);
-        const filename = await this.getUniqueFileName(file, targetDir);
-        targetFilename = filename;
         await fs_1.promises.mkdir(targetDir, { recursive: true });
         if (file.buffer) {
-            await fs_1.promises.writeFile(targetFilename, file.buffer);
+            await fs_1.promises.writeFile(file.name, file.buffer);
         }
         else {
-            await fs_1.promises.copyFile(file.path, targetFilename);
+            await fs_1.promises.copyFile(file.path, file.name);
         }
         // The src for the image must be in URI format, not a file system path, which in Windows uses \
         // For local file system storage can use relative path so add a slash
         const fullUrl = url_utils_1.default
-            .urlJoin("/", url_utils_1.default.getSubdir(), this.staticFileURLPrefix, path.relative(this.storagePath, targetFilename))
+            .urlJoin("/", url_utils_1.default.getSubdir(), this.staticFileURLPrefix, path.relative(this.storagePath, file.name))
             .replace(new RegExp(`\\${path.sep}`, "g"), "/");
         return fullUrl;
     }

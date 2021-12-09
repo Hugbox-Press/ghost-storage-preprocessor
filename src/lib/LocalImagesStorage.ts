@@ -26,51 +26,6 @@ interface ImageLike extends StorageBase.Image {
   buffer?: Buffer;
 }
 
-interface PrimitiveOptions {
-  /**
-   * Input image to process (can be a local path, http url, or data url)
-   */
-  input: string;
-  /**
-   *  Path to generate output image
-   */
-  output: string;
-  /**
-   * Number of steps to process [1, 1000] (optional, default 200)
-   */
-  numSteps: number;
-  /**
-   *  Minimum energy to stop processing early [0, 1]
-   */
-  minEnergy: number;
-  /**
-   * Alpha opacity of shapes [0, 255] (optional, default 128)
-   */
-  shapeAlpha: number;
-  /**
-   * Type of shapes to use (optional, default traingle)
-   */
-  shapeType: string;
-  /**
-   * Number of top-level candidates per step [1, 32] (optional, default 1)
-   */
-  numCandidates: number;
-  /**
-   * Number of random candidate shapes per step [10, 1000] (optional, default 50)
-   */
-  numCandidateShapes: number;
-  /**
-   * Number of candidate mutations per step [10, 500] (optional, default 100)
-   */
-  numCandidateMutations: number;
-  /**
-   * Number of extra candidate shapes per step [0, 16] (optional, default 0)
-   */
-  numCandidateExtras: number;
-  // onStep?: function //? Optional async function taking in the model and step index
-  // log?: function // Optional logging function (console.log to enable logging) (optional, default noop)
-}
-
 export class LocalImagesStorage extends StorageBase {
   storagePath: string;
   staticFileURLPrefix: string;
@@ -96,9 +51,12 @@ export class LocalImagesStorage extends StorageBase {
    * - returns a promise which ultimately returns the full url to the uploaded file
    */
   async save(
-    image: StorageBase.Image,
+    image: ImageLike,
+    // NOTE: the base implementation of `getTargetDir` returns the format this.storagePath/YYYY/MM
     targetDir: string = this.getTargetDir(this.storagePath)
   ): Promise<string> {
+    image.name = await this.getUniqueFileName(image, targetDir);
+
     // First, save original.
     const savedImagePath = await this._save(image, targetDir);
 
@@ -132,21 +90,13 @@ export class LocalImagesStorage extends StorageBase {
    * Saves the file to storage (the file system)
    * - returns a promise which ultimately returns the full url to the uploaded file
    */
-  async _save(file: ImageLike, targetDir?: string): Promise<string> {
-    let targetFilename: string;
-
-    // NOTE: the base implementation of `getTargetDir` returns the format this.storagePath/YYYY/MM
-    targetDir = targetDir || this.getTargetDir(this.storagePath);
-
-    const filename = await this.getUniqueFileName(file, targetDir);
-
-    targetFilename = filename;
+  async _save(file: ImageLike, targetDir: string): Promise<string> {
     await fs.mkdir(targetDir, { recursive: true });
 
     if (file.buffer) {
-      await fs.writeFile(targetFilename, file.buffer);
+      await fs.writeFile(file.name, file.buffer);
     } else {
-      await fs.copyFile(file.path, targetFilename);
+      await fs.copyFile(file.path, file.name);
     }
 
     // The src for the image must be in URI format, not a file system path, which in Windows uses \
@@ -156,7 +106,7 @@ export class LocalImagesStorage extends StorageBase {
         "/",
         urlUtils.getSubdir(),
         this.staticFileURLPrefix,
-        path.relative(this.storagePath, targetFilename)
+        path.relative(this.storagePath, file.name)
       )
       .replace(new RegExp(`\\${path.sep}`, "g"), "/");
 

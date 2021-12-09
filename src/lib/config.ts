@@ -6,8 +6,9 @@ interface GhostConfig {
 }
 
 const getConfig = () => {
-  const config: GhostConfig = require("../../../../../../config.production.json");
-  // const config: GhostConfig = require("../../test/config.production.json");
+  const path = "../../../../../../config.production.json";
+  // const path = "../../test/config.production.json"
+  const config: GhostConfig = require(path);
 
   config.url = new URL(config.url).toString();
 
