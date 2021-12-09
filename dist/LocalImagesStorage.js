@@ -6,7 +6,8 @@ exports.LocalImagesStorage = void 0;
 const config_1 = require("./config");
 const LocalStorageBase_1 = require("./LocalStorageBase");
 const url_utils_1 = require("./url-utils");
-const fs = require("fs-extra");
+const fs_1 = require("fs");
+const sqip_1 = require("sqip");
 const path = require("path");
 let messages = {
     notFound: "Image not found",
@@ -14,6 +15,7 @@ let messages = {
     cannotRead: "Could not read image: {file}",
 };
 class LocalImagesStorage extends LocalStorageBase_1.LocalStorageBase {
+    storage = new LocalImagesStorage();
     constructor() {
         super({
             storagePath: path.join(config_1.default.paths.contentPath, "images/"),
@@ -21,6 +23,18 @@ class LocalImagesStorage extends LocalStorageBase_1.LocalStorageBase {
             siteUrl: config_1.default.url,
             errorMessages: messages,
         });
+    }
+    /**
+     * Saves the file to storage (the file system)
+     * - returns a promise which ultimately returns the full url to the uploaded file
+     */
+    async save(image, targetDir = this.getTargetDir(this.storagePath)) {
+        const imageFile = await fs_1.promises.readFile(image.path);
+        const res = await (0, sqip_1.sqip)({ input: imageFile });
+        const sqipResult = Array.isArray(res) ? res[0] : res;
+        const targetFilename = (await this.getUniqueFileName(image, targetDir)) + ".sqip.svg";
+        await this.saveRaw(sqipResult.content, targetFilename);
+        return super.save(image, targetDir);
     }
     /**
      * Saves a buffer in the targetPath
@@ -31,8 +45,8 @@ class LocalImagesStorage extends LocalStorageBase_1.LocalStorageBase {
     async saveRaw(buffer, targetPath) {
         const storagePath = path.join(this.storagePath, targetPath);
         const targetDir = path.dirname(storagePath);
-        await fs.mkdirs(targetDir);
-        await fs.writeFile(storagePath, buffer);
+        await fs_1.promises.mkdir(targetDir);
+        await fs_1.promises.writeFile(storagePath, buffer);
         // For local file system storage can use relative path so add a slash
         const fullUrl = url_utils_1.default
             .urlJoin("/", url_utils_1.default.getSubdir(), this.staticFileURLPrefix, targetPath)

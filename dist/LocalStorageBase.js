@@ -4,7 +4,7 @@ exports.LocalStorageBase = void 0;
 // # Local File Base Storage module
 // The (default) module for storing files using the local file system
 const serveStatic = require("express").static;
-const fs_extra_1 = require("fs-extra");
+const fs_1 = require("fs");
 const path = require("path");
 const StorageBase = require("ghost-storage-base");
 const url_utils_1 = require("./url-utils");
@@ -36,10 +36,6 @@ class LocalStorageBase extends StorageBase {
     /**
      * Saves the file to storage (the file system)
      * - returns a promise which ultimately returns the full url to the uploaded file
-     *
-     * @param {StorageBase.Image} file
-     * @param {String} targetDir
-     * @returns {Promise<String>}
      */
     async save(file, targetDir) {
         let targetFilename;
@@ -47,8 +43,8 @@ class LocalStorageBase extends StorageBase {
         targetDir = targetDir || this.getTargetDir(this.storagePath);
         const filename = await this.getUniqueFileName(file, targetDir);
         targetFilename = filename;
-        await fs_extra_1.default.mkdirs(targetDir);
-        await fs_extra_1.default.copy(file.path, targetFilename);
+        await fs_1.promises.mkdir(targetDir);
+        await fs_1.promises.copyFile(file.path, targetFilename);
         // The src for the image must be in URI format, not a file system path, which in Windows uses \
         // For local file system storage can use relative path so add a slash
         const fullUrl = url_utils_1.default
@@ -76,7 +72,7 @@ class LocalStorageBase extends StorageBase {
     }
     exists(fileName, targetDir) {
         const filePath = path.join(targetDir || this.storagePath, fileName);
-        return fs_extra_1.default
+        return fs_1.promises
             .stat(filePath)
             .then(() => {
             return true;
@@ -123,13 +119,10 @@ class LocalStorageBase extends StorageBase {
             });
         };
     }
-    /**
-     * @param {String} filePath
-     * @returns {Promise.<*>}
-     */
     async delete(fileName, targetDir) {
         const filePath = path.join(targetDir, fileName);
-        return await fs_extra_1.default.remove(filePath);
+        await fs_1.promises.rm(filePath);
+        return true;
     }
     /**
      * Reads bytes from disk for a target file
@@ -143,30 +136,29 @@ class LocalStorageBase extends StorageBase {
         options.path = (options.path || "").replace(/\/$|\\$/, "");
         const targetPath = path.join(this.storagePath, options.path);
         return new Promise((resolve, reject) => {
-            fs_extra_1.default.readFile(targetPath, (err, bytes) => {
-                if (err) {
-                    if (err.code === "ENOENT" || err.code === "ENOTDIR") {
-                        return reject(new errors.NotFoundError({
-                            err: err,
-                            message: tpl(this.errorMessages.notFoundWithRef, {
-                                file: options.path,
-                            }),
-                        }));
-                    }
-                    if (err.code === "ENAMETOOLONG") {
-                        return reject(new errors.BadRequestError({ err: err }));
-                    }
-                    if (err.code === "EACCES") {
-                        return reject(new errors.NoPermissionError({ err: err }));
-                    }
-                    return reject(new errors.InternalServerError({
+            fs_1.promises.readFile(targetPath)
+                .then(resolve)
+                .catch((err) => {
+                if (err.code === "ENOENT" || err.code === "ENOTDIR") {
+                    return reject(new errors.NotFoundError({
                         err: err,
-                        message: tpl(this.errorMessages.cannotRead, {
+                        message: tpl(this.errorMessages.notFoundWithRef, {
                             file: options.path,
                         }),
                     }));
                 }
-                resolve(bytes);
+                if (err.code === "ENAMETOOLONG") {
+                    return reject(new errors.BadRequestError({ err: err }));
+                }
+                if (err.code === "EACCES") {
+                    return reject(new errors.NoPermissionError({ err: err }));
+                }
+                return reject(new errors.InternalServerError({
+                    err: err,
+                    message: tpl(this.errorMessages.cannotRead, {
+                        file: options.path,
+                    }),
+                }));
             });
         });
     }

@@ -2,7 +2,7 @@
 // The (default) module for storing files using the local file system
 const serveStatic = require("express").static;
 
-import fs from "fs-extra";
+import { promises as fs } from "fs";
 import * as path from "path";
 import * as StorageBase from "ghost-storage-base";
 import urlUtils from "./url-utils";
@@ -52,13 +52,9 @@ export class LocalStorageBase extends StorageBase {
   /**
    * Saves the file to storage (the file system)
    * - returns a promise which ultimately returns the full url to the uploaded file
-   *
-   * @param {StorageBase.Image} file
-   * @param {String} targetDir
-   * @returns {Promise<String>}
    */
-  async save(file, targetDir) {
-    let targetFilename;
+  async save(file: StorageBase.Image, targetDir: string): Promise<string> {
+    let targetFilename: string;
 
     // NOTE: the base implementation of `getTargetDir` returns the format this.storagePath/YYYY/MM
     targetDir = targetDir || this.getTargetDir(this.storagePath);
@@ -66,9 +62,9 @@ export class LocalStorageBase extends StorageBase {
     const filename = await this.getUniqueFileName(file, targetDir);
 
     targetFilename = filename;
-    await fs.mkdirs(targetDir);
+    await fs.mkdir(targetDir);
 
-    await fs.copy(file.path, targetFilename);
+    await fs.copyFile(file.path, targetFilename);
 
     // The src for the image must be in URI format, not a file system path, which in Windows uses \
     // For local file system storage can use relative path so add a slash
@@ -167,14 +163,11 @@ export class LocalStorageBase extends StorageBase {
       });
     };
   }
-
-  /**
-   * @param {String} filePath
-   * @returns {Promise.<*>}
-   */
-  async delete(fileName, targetDir) {
+  async delete(fileName: string, targetDir: string): Promise<boolean> {
     const filePath = path.join(targetDir, fileName);
-    return await fs.remove(filePath);
+    await fs.rm(filePath);
+
+    return true;
   }
 
   /**
@@ -192,8 +185,9 @@ export class LocalStorageBase extends StorageBase {
     const targetPath = path.join(this.storagePath, options.path);
 
     return new Promise<Buffer>((resolve, reject) => {
-      fs.readFile(targetPath, (err, bytes) => {
-        if (err) {
+      fs.readFile(targetPath)
+        .then(resolve)
+        .catch((err) => {
           if (err.code === "ENOENT" || err.code === "ENOTDIR") {
             return reject(
               new errors.NotFoundError({
@@ -221,10 +215,7 @@ export class LocalStorageBase extends StorageBase {
               }),
             })
           );
-        }
-
-        resolve(bytes);
-      });
+        });
     });
   }
 }
