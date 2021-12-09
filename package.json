@@ -7,7 +7,8 @@
   "author": "Casey Webb <notcaseywebb@gmail.com>",
   "license": "WTFPL",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "scripts": {
     "build": "tsc",
@@ -23,6 +24,7 @@
     "express": "^4.17.1",
     "express-lazy-router": "^1.0.4",
     "ghost-storage-base": "^0.0.1",
+    "global": "^4.4.0",
     "moment": "^2.29.1",
     "sqip": "^0.3.3"
   },
@@ -30,7 +32,9 @@
     "@types/ghost-storage-base": "^0.0.1",
     "@types/moment": "^2.13.0",
     "@types/node": "^16.11.12",
-    "tslib": "^2.3.1",
     "typescript": "^4.5.2"
+  },
+  "peerDependencies": {
+    "sqip": "^0.3.3"
   }
 }
