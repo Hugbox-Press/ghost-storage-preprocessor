@@ -1,3 +1,3 @@
-import { LocalImagesStorage } from "./LocalImagesStorage";
+import { LocalImagesStorage } from "./lib/LocalImagesStorage";
 
 module.exports = LocalImagesStorage;
