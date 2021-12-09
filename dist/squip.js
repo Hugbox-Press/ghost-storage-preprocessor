@@ -1,19 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GhostStoragePreprocessorSqipTransform = void 0;
-const fs = require("fs");
-const sqip = require("sqip");
+const fs_1 = require("fs");
+const sqip_1 = require("sqip");
 class GhostStoragePreprocessorSqipTransform {
     async save(image, targetDir) {
-        const res = sqip({ filename: image.path });
+        const imageFile = await fs_1.promises.readFile(image.path);
+        const res = await (0, sqip_1.sqip)({ input: imageFile });
+        const sqipResult = Array.isArray(res) ? res[0] : res;
         const sqipPath = image.path + ".sqip.svg";
-        const sqipImage = Object.assign({}, image, {
+        await fs_1.promises.writeFile(sqipPath, sqipResult.content);
+        const sqipImage = {
             name: image.name + ".sqip.svg",
             path: sqipPath,
-            mimetype: "image/svg",
             type: "image/svg",
-        });
-        await new Promise((resolve, reject) => fs.writeFile(sqipPath, res.final_svg, (err) => err ? reject(err) : resolve()));
+        };
         return [
             [image, targetDir],
             [sqipImage, targetDir],

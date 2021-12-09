@@ -1,5 +1,5 @@
-import * as fs from "fs";
-import * as sqip from "sqip";
+import { promises as fs } from "fs";
+import { sqip } from "sqip";
 import * as StorageBase from "ghost-storage-base";
 
 interface IGhostStoragePreprocessorTransform {
@@ -16,24 +16,27 @@ interface IGhostStoragePreprocessorTransform {
 export class GhostStoragePreprocessorSqipTransform
   implements IGhostStoragePreprocessorTransform
 {
-  public async save(image: StorageBase.Image, targetDir?: string) {
-    const res = sqip({ filename: image.path });
+  public async save(
+    image: StorageBase.Image,
+    targetDir?: string
+  ): Promise<Array<[StorageBase.Image, string]>> {
+    const imageFile = await fs.readFile(image.path);
+    const res = await sqip({ input: imageFile });
+    const sqipResult = Array.isArray(res) ? res[0] : res;
+
     const sqipPath = image.path + ".sqip.svg";
-    const sqipImage = Object.assign({}, image, {
+    await fs.writeFile(sqipPath, sqipResult.content);
+
+    const sqipImage: StorageBase.Image = {
       name: image.name + ".sqip.svg",
       path: sqipPath,
-      mimetype: "image/svg",
       type: "image/svg",
-    });
-    await new Promise<void>((resolve, reject) =>
-      fs.writeFile(sqipPath, res.final_svg, (err) =>
-        err ? reject(err) : resolve()
-      )
-    );
+    };
+
     return [
       [image, targetDir],
       [sqipImage, targetDir],
-    ] as [StorageBase.Image, string][];
+    ];
   }
 
   public async delete(image: StorageBase.Image, targetDir?: string) {
