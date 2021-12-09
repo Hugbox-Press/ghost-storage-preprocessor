@@ -20,6 +20,13 @@ const messages = {
   invalidUrlParameter: `The URL "{url}" is not a valid URL for this site.`,
 };
 
+interface LocalStorageBaseOptions {
+  storagePath: string;
+  siteUrl: string;
+  errorMessages?: Record<string, string>;
+  staticFileURLPrefix: string;
+}
+
 export class LocalStorageBase extends StorageBase {
   storagePath: string;
   staticFileURLPrefix: string;
@@ -27,20 +34,19 @@ export class LocalStorageBase extends StorageBase {
   staticFileUrl: string;
   errorMessages: Record<string, string>;
 
-  /**
-   *
-   * @param {Object} options
-   * @param {String} options.storagePath
-   * @param {String} options.siteUrl
-   */
-  constructor({ storagePath, staticFileURLPrefix, siteUrl }) {
+  constructor({
+    storagePath,
+    staticFileURLPrefix,
+    siteUrl,
+    errorMessages,
+  }: LocalStorageBaseOptions) {
     super();
 
     this.storagePath = storagePath;
     this.staticFileURLPrefix = staticFileURLPrefix;
     this.siteUrl = siteUrl;
     this.staticFileUrl = `${siteUrl}${staticFileURLPrefix}`;
-    this.errorMessages = messages;
+    this.errorMessages = errorMessages || messages;
   }
 
   /**

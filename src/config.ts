@@ -7,4 +7,6 @@ interface GhostConfig {
 
 const config: GhostConfig = require("../../../../../config.production.json");
 
+config.url = new URL(config.url).toString();
+
 export default config;

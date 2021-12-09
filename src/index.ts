@@ -1,6 +1,6 @@
 import * as StorageBase from "ghost-storage-base";
+import { LocalImagesStorage } from "./LocalImagesStorage";
 import { GhostStoragePreprocessorSqipTransform } from "./squip";
-import { LocalFilesStorage } from "./localFilesStorage";
 
 type Preprocessor = {
   save(
@@ -19,7 +19,7 @@ module.exports = class GhostStoragePreprocessor extends StorageBase {
 
   constructor() {
     super();
-    this.storage = new LocalFilesStorage();
+    this.storage = new LocalImagesStorage();
     this.preprocessors = [new GhostStoragePreprocessorSqipTransform()];
   }
 
