@@ -1,9 +1,9 @@
 import fs from "fs-extra";
-import path from "path";
-import tpl from "@tryghost/tpl";
-import errors from "@tryghost/errors";
-import StorageBase from "ghost-storage-base";
-import { urlUtils } from "./url-utils";
+import urlUtils from "./url-utils";
+import * as path from "path";
+import * as StorageBase from "ghost-storage-base";
+const errors = require("@tryghost/errors");
+const tpl = require("@tryghost/tpl");
 
 const messages = {
   notFound: "File not found",

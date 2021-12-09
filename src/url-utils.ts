@@ -1,4 +1,4 @@
-import UrlUtils from "@tryghost/url-utils";
+const UrlUtils = require("@tryghost/url-utils");
 import config from "./config";
 
 /**
@@ -103,7 +103,7 @@ const deduplicateSubdirectory = function deduplicateSubdirectory(url, rootUrl) {
   return url.replace(subdirRegex, `$1${subdir}/`);
 };
 
-export const urlUtils = new UrlUtils({
+const urlUtils = new UrlUtils({
   getSubdir,
   getSiteUrl,
   getAdminUrl,
@@ -113,3 +113,5 @@ export const urlUtils = new UrlUtils({
   redirectCacheMaxAge: 999999,
   baseApiPath: "/ghost/api",
 });
+
+export default urlUtils;

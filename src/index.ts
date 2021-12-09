@@ -1,4 +1,4 @@
-import StorageBase from "ghost-storage-base";
+import * as StorageBase from "ghost-storage-base";
 import { GhostStoragePreprocessorSqipTransform } from "./squip";
 import { LocalFilesStorage } from "./localFilesStorage";
 

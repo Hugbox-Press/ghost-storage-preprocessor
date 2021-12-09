@@ -1,5 +1,5 @@
 import constants from "@tryghost/constants";
-import path from "path";
+import * as path from "path";
 import config from "./config";
 import { LocalStorageBase } from "./LocalStorageBase";
 
