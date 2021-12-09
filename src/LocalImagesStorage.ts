@@ -22,6 +22,10 @@ const messages = {
   invalidUrlParameter: `The URL "{url}" is not a valid URL for this site.`,
 };
 
+interface ImageLike extends StorageBase.Image {
+  buffer?: Buffer;
+}
+
 export class LocalImagesStorage extends StorageBase {
   storagePath: string;
   staticFileURLPrefix: string;
@@ -46,23 +50,40 @@ export class LocalImagesStorage extends StorageBase {
     image: StorageBase.Image,
     targetDir: string = this.getTargetDir(this.storagePath)
   ): Promise<string> {
+    // First, save original.
+    const savedImagePath = await this._save(image, targetDir);
+
+    // Create sqip image...
+    const sqipImage: ImageLike = {
+      ...image,
+      name: image.name + ".sqip.svg",
+    };
+
     const imageFile = await fs.readFile(image.path);
-    const outputFileName =
-      (await this.getUniqueFileName(image, targetDir)) + ".sqip.svg";
+    const sqipResults = await sqip({
+      input: imageFile,
+      outputFileName: sqipImage.name,
+    });
 
-    const res = await sqip({ input: imageFile, outputFileName });
-    const sqipResult = Array.isArray(res) ? res[0] : res;
+    for (const sqipResult of [sqipResults].flat()) {
+      // Save results
+      await this._save(
+        {
+          ...sqipImage,
+          buffer: sqipResult.content,
+        },
+        targetDir
+      );
+    }
 
-    await this.saveRaw(sqipResult.content, outputFileName);
-
-    return this._save(image, targetDir);
+    return savedImagePath;
   }
 
   /**
    * Saves the file to storage (the file system)
    * - returns a promise which ultimately returns the full url to the uploaded file
    */
-  async _save(file: StorageBase.Image, targetDir: string): Promise<string> {
+  async _save(file: ImageLike, targetDir?: string): Promise<string> {
     let targetFilename: string;
 
     // NOTE: the base implementation of `getTargetDir` returns the format this.storagePath/YYYY/MM
@@ -71,9 +92,13 @@ export class LocalImagesStorage extends StorageBase {
     const filename = await this.getUniqueFileName(file, targetDir);
 
     targetFilename = filename;
-    await fs.mkdir(targetDir);
+    await fs.mkdir(targetDir, { recursive: true });
 
-    await fs.copyFile(file.path, targetFilename);
+    if (file.buffer) {
+      await fs.writeFile(targetFilename, file.buffer);
+    } else {
+      await fs.copyFile(file.path, targetFilename);
+    }
 
     // The src for the image must be in URI format, not a file system path, which in Windows uses \
     // For local file system storage can use relative path so add a slash
@@ -99,7 +124,7 @@ export class LocalImagesStorage extends StorageBase {
     const storagePath = path.join(this.storagePath, targetPath);
     const targetDir = path.dirname(storagePath);
 
-    await fs.mkdir(targetDir);
+    await fs.mkdir(targetDir, { recursive: true });
     await fs.writeFile(storagePath, buffer);
 
     // For local file system storage can use relative path so add a slash

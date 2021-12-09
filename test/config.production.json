@@ -1,0 +1,27 @@
+{
+  "url": "https://hugbox.biz",
+  "server": {
+    "port": 2368,
+    "host": "127.0.0.1"
+  },
+  "database": {
+    "client": "sqlite3",
+    "connection": {
+      "filename": "/home/ubuntu/hugbox/content/data/ghost.db"
+    }
+  },
+  "mail": {},
+  "logging": {
+    "transports": [
+      "file",
+      "stdout"
+    ]
+  },
+  "process": "systemd",
+  "paths": {
+    "contentPath": "/Users/teffen/hugbox/content"
+  },
+  "storage": {
+    "active": "preprocessor"
+  }
+}

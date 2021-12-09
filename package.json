@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "repository": "https://github.com/caseyWebb/ghost-storage-preprocessor",
   "author": "Casey Webb <notcaseywebb@gmail.com>",
-  "license": "WTFPL",
+  "license": "MIT",
   "files": [
     "dist"
   ],
@@ -40,6 +40,7 @@
     "sqip": "canary",
     "sqip-plugin-data-uri": "canary",
     "sqip-plugin-primitive": "canary",
-    "sqip-plugin-svgo": "canary"
+    "sqip-plugin-svgo": "canary",
+    "sqip-plugin-blur": "canary"
   }
 }
